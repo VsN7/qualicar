@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" role="img" aria-labelledby="t">
+  <title id="t">QUALI CAR — Funilaria e Pintura</title>
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d42845"/>
+      <stop offset="100%" stop-color="#a81830"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="6" width="52" height="52" rx="12" fill="url(#g)"/>
+  <text x="28" y="44" text-anchor="middle" fill="#fff" font-family="system-ui, Segoe UI, Arial Black, sans-serif" font-size="22" font-weight="800" letter-spacing="-0.02em">QC</text>
+  <text x="66" y="38" fill="#1a1d24" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="0.04em">QUALI</text>
+  <text x="168" y="38" fill="#c41e3a" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="0.04em">CAR</text>
+  <text x="66" y="56" fill="#5c6370" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0.12em">FUNILARIA E PINTURA</text>
+</svg>

@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orçamento — QUALI CAR</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --qc-ink: #1a1d24;
+      --qc-accent: #c41e3a;
+      --qc-muted: #5c6370;
+      --qc-border: #cfd4dc;
+      --qc-paper: #fafbfc;
+      --qc-header-bg: #111318;
+    }
+
+    body {
+      font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(160deg, #e8ecf2 0%, #f4f6f9 45%, #eef1f6 100%);
+      color: var(--qc-ink);
+      min-height: 100vh;
+      padding: 1.5rem 0 3rem;
+      padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    @media (max-width: 767.98px) {
+      body {
+        padding: 0.75rem 0 1.5rem;
+        padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    .sheet {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(17, 19, 24, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+      border: 1px solid rgba(207, 212, 220, 0.6);
+      overflow: hidden;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      color: var(--qc-ink);
+    }
+
+    .brand-sub {
+      font-size: 0.95rem;
+      color: var(--qc-muted);
+      font-weight: 500;
+    }
+
+    .doc-box {
+      background: linear-gradient(145deg, #f8f9fb 0%, #fff 100%);
+      border: 1px solid var(--qc-border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+
+    .doc-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--qc-ink);
+    }
+
+    .quote-num input {
+      font-weight: 700;
+      color: var(--qc-accent);
+      border: none;
+      border-bottom: 2px solid var(--qc-accent);
+      background: transparent;
+      width: 5rem;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .car-icon {
+      width: 72px;
+      height: auto;
+      opacity: 0.85;
+    }
+
+    /* Logo marca — tela e impressão/PDF */
+    .qualicar-logo-wrap {
+      flex-shrink: 0;
+    }
+
+    .qualicar-logo {
+      display: block;
+      height: 56px;
+      width: auto;
+      max-width: min(100%, 280px);
+      aspect-ratio: 300 / 64;
+      object-fit: contain;
+      overflow: visible;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    @media (max-width: 576px) {
+      .qualicar-logo {
+        height: 48px;
+        max-width: 240px;
+      }
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--qc-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .form-control,
+    .form-select {
+      border-color: var(--qc-border);
+      font-size: 0.9rem;
+    }
+
+    .form-control:focus {
+      border-color: #8b95a8;
+      box-shadow: 0 0 0 0.2rem rgba(26, 29, 36, 0.08);
+    }
+
+    .items-table thead th {
+      background: var(--qc-header-bg);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border: none;
+      padding: 0.55rem 0.5rem;
+      vertical-align: middle;
+    }
+
+    .items-table tbody td {
+      padding: 0.35rem 0.4rem;
+      vertical-align: middle;
+      border-color: #e2e6ec;
+    }
+
+    .items-table input {
+      border: 1px solid transparent;
+      background: transparent;
+      width: 100%;
+      padding: 0.25rem 0.35rem;
+      font-size: 0.88rem;
+    }
+
+    .items-table input:focus {
+      outline: none;
+      border-color: #b8c0cc;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .items-table .col-qty {
+      width: 4.5rem;
+    }
+
+    .items-table .col-total {
+      width: 7.5rem;
+    }
+
+    .totals-box {
+      border: 1px solid var(--qc-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      background: var(--qc-paper);
+    }
+
+    .totals-box .row-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0;
+      font-size: 0.9rem;
+      border-bottom: 1px dashed #dce0e6;
+    }
+
+    .totals-box .row-line:last-child {
+      border-bottom: none;
+      font-weight: 700;
+      font-size: 1rem;
+      padding-top: 0.5rem;
+      margin-top: 0.25rem;
+      border-top: 2px solid var(--qc-ink);
+    }
+
+    .totals-box input {
+      border: none;
+      background: transparent;
+      text-align: right;
+      font-weight: 600;
+      max-width: 8rem;
+    }
+
+    .signature-line {
+      border-top: 1px solid var(--qc-ink);
+      margin-top: 2.5rem;
+      padding-top: 0.35rem;
+      font-size: 0.82rem;
+      text-align: center;
+      color: var(--qc-muted);
+    }
+
+    .toolbar .btn {
+      font-weight: 600;
+    }
+
+    .toolbar-sticky {
+      padding: 0.35rem 0;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 767.98px) {
+      .toolbar-sticky {
+        position: sticky;
+        top: 0;
+        z-index: 1020;
+        padding: 0.65rem 0;
+        margin: -0.25rem -0.5rem 0.75rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        background: rgba(244, 246, 249, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(207, 212, 220, 0.5);
+      }
+
+      .toolbar-sticky .toolbar-inner {
+        flex-direction: column;
+        align-items: stretch !important;
+      }
+
+      .toolbar-sticky .toolbar-inner > p {
+        text-align: center;
+        font-size: 0.78rem !important;
+      }
+
+      .toolbar-sticky .toolbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .toolbar-sticky .toolbar-actions .btn {
+        flex: 1 1 auto;
+        min-width: 8rem;
+      }
+
+      .toolbar-sticky .btn {
+        min-height: 44px;
+        font-size: 0.9rem;
+      }
+
+      .sheet {
+        border-radius: 12px;
+      }
+
+      .sheet.sheet-mobile-pad {
+        padding: 1rem !important;
+      }
+
+      /* Evita zoom iOS em campos numéricos */
+      .form-control,
+      .form-select,
+      .items-table input {
+        font-size: 16px;
+      }
+
+      .section-label {
+        font-size: 0.68rem;
+      }
+
+      .doc-box {
+        padding: 0.85rem 1rem;
+      }
+
+      .doc-title {
+        font-size: 1.15rem;
+      }
+
+      /* Tabela de itens em cartões no mobile */
+      .items-lines-toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.65rem !important;
+        padding-bottom: 0.65rem;
+      }
+
+      .items-lines-toolbar .items-lines-toolbar-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: stretch;
+      }
+
+      .items-lines-toolbar .items-lines-toolbar-actions .btn {
+        flex: 1;
+        min-height: 44px;
+      }
+
+      .items-table-wrap {
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
+      }
+
+      .items-table thead {
+        display: none;
+      }
+
+      .items-table tbody tr {
+        display: block;
+        border: 1px solid var(--qc-border);
+        border-radius: 10px;
+        margin-bottom: 0.65rem;
+        padding: 0.35rem 0.65rem 0.5rem;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(17, 19, 24, 0.04);
+      }
+
+      .items-table tbody td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100% !important;
+        border: none !important;
+        padding: 0.45rem 0 !important;
+      }
+
+      .items-table tbody td + td {
+        border-top: 1px dashed #e2e6ec !important;
+      }
+
+      .items-table tbody td::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-size: 0.68rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--qc-muted);
+        max-width: 42%;
+      }
+
+      .items-table tbody td.col-qty::before {
+        max-width: none;
+      }
+
+      .items-table .col-qty,
+      .items-table .col-total {
+        width: auto !important;
+      }
+
+      .items-table tbody td input {
+        flex: 1;
+        min-width: 0;
+        text-align: right !important;
+        padding: 0.5rem 0.4rem !important;
+        border-radius: 6px !important;
+      }
+
+      .items-table tbody td:not(.col-total) input {
+        text-align: left !important;
+      }
+
+      .totals-box .row-line {
+        flex-wrap: wrap;
+        font-size: 0.95rem;
+        padding: 0.5rem 0;
+      }
+
+      .totals-box input {
+        max-width: none;
+        min-width: 5.5rem;
+        font-size: 1rem !important;
+      }
+
+      .totals-box input[readonly] {
+        -webkit-user-select: all;
+        user-select: all;
+      }
+
+      .signature-line {
+        min-height: 2.75rem;
+        padding-top: 0.5rem;
+      }
+    }
+
+    .totals-box input[readonly] {
+      background: rgba(248, 249, 251, 0.9) !important;
+      cursor: default;
+      color: var(--qc-ink);
+    }
+
+    .items-lines-toolbar {
+      padding: 0.25rem 0 0.5rem;
+      border-bottom: 1px solid rgba(207, 212, 220, 0.75);
+      margin-bottom: 0.35rem;
+    }
+
+    .items-lines-toolbar .section-label {
+      margin-bottom: 0;
+    }
+
+    .line-count-badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--qc-muted);
+      background: rgba(248, 249, 251, 0.95);
+      border: 1px solid var(--qc-border);
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+      line-height: 1.2;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 12mm;
+      }
+
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      /* Impressão: tamanho de fonte independente do layout mobile */
+      .form-control,
+      .form-select,
+      .items-table input,
+      textarea {
+        font-size: 0.88rem !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .sheet {
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+      }
+
+      .items-table input {
+        border: none !important;
+        background: transparent !important;
+      }
+
+      .quote-num input {
+        border-bottom: 1px solid #000 !important;
+        color: #000 !important;
+      }
+
+      .form-control,
+      .form-select,
+      textarea {
+        border: none !important;
+        box-shadow: none !important;
+        padding-left: 0 !important;
+        background: transparent !important;
+      }
+
+      .doc-box {
+        border: 1px solid #000;
+      }
+
+      .totals-box {
+        border: 1px solid #000;
+        background: #fff;
+      }
+
+      tr {
+        page-break-inside: avoid;
+      }
+
+      .qualicar-logo {
+        height: 50px;
+        max-width: 240px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .items-table thead {
+        display: table-header-group !important;
+      }
+
+      .items-table tbody tr {
+        display: table-row !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+
+      .items-table tbody td {
+        display: table-cell !important;
+        width: auto !important;
+        border: inherit !important;
+        padding: 0.35rem 0.4rem !important;
+      }
+
+      .items-table tbody td::before {
+        content: none !important;
+      }
+
+      .items-table tbody td input {
+        text-align: inherit !important;
+      }
+
+      .items-table tbody td.col-total input {
+        text-align: right !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container container-narrow px-3 px-md-4" style="max-width: 920px;">
+    <div class="toolbar toolbar-sticky no-print mb-2">
+      <div class="toolbar-inner d-flex flex-wrap gap-2 justify-content-between align-items-center">
+        <p class="mb-0 text-muted small px-1">Preencha os campos e use <strong>Imprimir / Salvar em PDF</strong> (menu ou botão abaixo).</p>
+        <div class="toolbar-actions d-flex flex-wrap gap-2 justify-content-center justify-content-md-end">
+          <button type="button" class="btn btn-dark btn-sm btn-print-mobile" id="btnPrint">Imprimir / PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <form class="sheet p-3 p-md-4 sheet-mobile-pad" id="formOrcamento" autocomplete="on">
+      <!-- Cabeçalho -->
+      <div class="row g-3 mb-4 align-items-stretch">
+        <div class="col-md-7">
+          <div class="h-100 d-flex flex-column justify-content-center py-2">
+            <div class="d-flex align-items-center flex-wrap gap-3 mb-2">
+              <div class="qualicar-logo-wrap">
+                <!-- SVG inline: impressão/PDF com file:// não carrega arquivos externos com confiabilidade -->
+                <svg
+                  class="qualicar-logo"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 300 64"
+                  role="img"
+                  aria-labelledby="qcLogoTitle"
+                >
+                  <title id="qcLogoTitle">QUALI CAR — Funilaria e Pintura</title>
+                  <defs>
+                    <linearGradient id="qcLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#d42845" />
+                      <stop offset="100%" stop-color="#a81830" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="2" y="6" width="52" height="52" rx="12" fill="url(#qcLogoGrad)" />
+                  <text x="28" y="44" text-anchor="middle" fill="#fff" font-family="system-ui, Segoe UI, Arial Black, sans-serif" font-size="22" font-weight="800" letter-spacing="-0.02em">QC</text>
+                  <text x="66" y="38" fill="#1a1d24" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="0.04em">QUALI</text>
+                  <text x="168" y="38" fill="#c41e3a" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="0.04em">CAR</text>
+                  <text x="66" y="56" fill="#5c6370" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="11" font-weight="600" letter-spacing="0.12em">FUNILARIA E PINTURA</text>
+                </svg>
+              </div>
+            </div>
+            <div class="small text-muted lh-sm">
+              <div><strong>Fone:</strong> (67) 3365-1927 / 99286-8962 / 99601-1701</div>
+              <div class="mt-1">Rua José Matte, 198 — Bairro São Caetano — Campo Grande — MS</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="doc-box h-100 d-flex flex-column align-items-center text-center">
+            <div class="doc-title mb-2">ORÇAMENTO</div>
+            <div class="quote-num d-flex align-items-center gap-2 mb-2">
+              <span class="small text-muted">Nº</span>
+              <input type="text" name="numero_orcamento" value="0394" maxlength="10" aria-label="Número do orçamento" />
+            </div>
+            <svg class="car-icon mt-1" viewBox="0 0 120 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path fill="none" stroke="currentColor" stroke-width="2" d="M12 32h8l4-12h68l4 12h8M20 32v4M100 32v4" />
+              <ellipse cx="28" cy="36" rx="10" ry="6" fill="none" stroke="currentColor" stroke-width="2" />
+              <ellipse cx="92" cy="36" rx="10" ry="6" fill="none" stroke="currentColor" stroke-width="2" />
+              <path fill="none" stroke="currentColor" stroke-width="1.5" d="M32 20h56l8 8H24l8-8z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cliente e veículo -->
+      <div class="border rounded-3 p-3 mb-3 bg-light bg-opacity-50">
+        <div class="row g-2 mb-2">
+          <div class="col-12">
+            <label class="section-label" for="cliente">Cliente</label>
+            <input class="form-control form-control-sm" type="text" id="cliente" name="cliente" placeholder="Nome completo" />
+          </div>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-md-6">
+            <label class="section-label" for="endereco">Endereço</label>
+            <input class="form-control form-control-sm" type="text" id="endereco" name="endereco" />
+          </div>
+          <div class="col-md-2 col-4">
+            <label class="section-label" for="numero">Nº</label>
+            <input class="form-control form-control-sm" type="text" id="numero" name="numero" />
+          </div>
+          <div class="col-md-4 col-8">
+            <label class="section-label" for="bairro">Bairro</label>
+            <input class="form-control form-control-sm" type="text" id="bairro" name="bairro" />
+          </div>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-md-6">
+            <label class="section-label" for="cidade">Cidade</label>
+            <input class="form-control form-control-sm" type="text" id="cidade" name="cidade" />
+          </div>
+          <div class="col-md-6">
+            <label class="section-label" for="fone">Fone / Cel</label>
+            <input class="form-control form-control-sm" type="tel" id="fone" name="fone" placeholder="(00) 00000-0000" />
+          </div>
+        </div>
+        <div class="row g-2 mb-2">
+          <div class="col-12">
+            <label class="section-label" for="veiculo">Veículo</label>
+            <input class="form-control form-control-sm" type="text" id="veiculo" name="veiculo" placeholder="Marca, modelo, cor, placa…" />
+          </div>
+        </div>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="section-label" for="prazo">Prazo de entrega</label>
+            <input class="form-control form-control-sm" type="text" id="prazo" name="prazo" placeholder="Ex.: 5 dias úteis" />
+          </div>
+          <div class="col-md-6">
+            <label class="section-label" for="data">Data</label>
+            <input class="form-control form-control-sm" type="date" id="data" name="data" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de itens -->
+      <div class="items-lines-toolbar no-print d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="section-label">Itens</span>
+          <span class="line-count-badge" id="lineCountLabel" aria-live="polite">3 linhas</span>
+        </div>
+        <div class="items-lines-toolbar-actions d-flex gap-2 flex-shrink-0">
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="btnAddRow">+ Linha</button>
+          <button type="button" class="btn btn-outline-danger btn-sm" id="btnRemoveRow">− Linha</button>
+        </div>
+      </div>
+      <div class="table-responsive items-table-wrap mb-3">
+        <table class="table table-bordered items-table mb-0" id="tabelaItens">
+          <thead>
+            <tr>
+              <th class="col-qty text-center">Quant.</th>
+              <th>Descriminação dos Serviços e Peças</th>
+              <th class="col-total text-end">Total</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyItens"></tbody>
+        </table>
+      </div>
+
+      <!-- Rodapé: no mobile, totais primeiro -->
+      <div class="row g-3 align-items-start">
+        <div class="col-md-7 order-2 order-md-1">
+          <label class="section-label" for="condicoes">Condições de pagamento</label>
+          <textarea class="form-control" id="condicoes" name="condicoes" rows="4" placeholder="À vista, parcelado, PIX, etc."></textarea>
+        </div>
+        <div class="col-md-5 order-1 order-md-2 mb-2 mb-md-0">
+          <div class="totals-box">
+            <div class="row-line">
+              <span>Total de Peças <span class="d-md-none text-muted fw-normal" style="font-size:0.72rem;">(soma das linhas)</span></span>
+              <span class="d-flex align-items-center gap-1 flex-shrink-0">
+                R$
+                <input
+                  type="text"
+                  name="total_pecas"
+                  id="totalPecas"
+                  readonly
+                  tabindex="-1"
+                  aria-live="polite"
+                  aria-label="Total de peças, calculado automaticamente"
+                  value="0,00"
+                />
+              </span>
+            </div>
+            <div class="row-line">
+              <span>Mão de Obra</span>
+              <span class="d-flex align-items-center gap-1 flex-shrink-0">
+                R$ <input type="text" name="mao_obra" id="maoObra" inputmode="decimal" placeholder="0,00" autocomplete="transaction-amount" />
+              </span>
+            </div>
+            <div class="row-line">
+              <span>Total Geral</span>
+              <span class="d-flex align-items-center gap-1 flex-shrink-0">
+                R$
+                <input
+                  type="text"
+                  name="total_geral"
+                  id="totalGeral"
+                  readonly
+                  tabindex="-1"
+                  aria-live="polite"
+                  aria-label="Total geral, calculado automaticamente"
+                  value="0,00"
+                />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assinaturas -->
+      <div class="row mt-4 pt-2">
+        <div class="col-6">
+          <div class="signature-line">Responsável</div>
+        </div>
+        <div class="col-6">
+          <div class="signature-line">Ass. Cliente Comprador</div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      const tbody = document.getElementById("tbodyItens");
+      const totalPecasEl = document.getElementById("totalPecas");
+      const maoObraEl = document.getElementById("maoObra");
+      const totalGeralEl = document.getElementById("totalGeral");
+      const defaultRows = 3;
+      const lineCountLabel = document.getElementById("lineCountLabel");
+
+      function parseMoney(str) {
+        const s = String(str == null ? "" : str)
+          .trim()
+          .replace(/\s/g, "");
+        if (!s) return 0;
+        if (s.includes(",")) {
+          const n = parseFloat(s.replace(/\./g, "").replace(",", "."));
+          return Number.isFinite(n) ? n : 0;
+        }
+        const parts = s.split(".");
+        if (parts.length > 2) {
+          const n = parseFloat(s.replace(/\./g, ""));
+          return Number.isFinite(n) ? n : 0;
+        }
+        if (parts.length === 2 && parts[1].length === 3) {
+          const n = parseFloat(s.replace(/\./g, ""));
+          return Number.isFinite(n) ? n : 0;
+        }
+        const n = parseFloat(s);
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function formatMoneyBR(n) {
+        const x = Number.isFinite(n) ? n : 0;
+        return x.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function recalcTotals() {
+        let sumLinhas = 0;
+        tbody.querySelectorAll('input[name="item_total[]"]').forEach(function (inp) {
+          sumLinhas += parseMoney(inp.value);
+        });
+        totalPecasEl.value = formatMoneyBR(sumLinhas);
+        const mo = parseMoney(maoObraEl.value);
+        totalGeralEl.value = formatMoneyBR(sumLinhas + mo);
+      }
+
+      function rowTemplate() {
+        const tr = document.createElement("tr");
+        tr.innerHTML =
+          '<td class="col-qty" data-label="Quant."><input type="text" name="item_qtd[]" inputmode="decimal" placeholder="0" /></td>' +
+          '<td data-label="Serviço / peça"><input type="text" name="item_desc[]" placeholder="Descrição" /></td>' +
+          '<td class="col-total" data-label="Total R$"><input type="text" name="item_total[]" class="text-end js-item-total" inputmode="decimal" placeholder="0,00" /></td>';
+        return tr;
+      }
+
+      function ensureMinRows() {
+        while (tbody.rows.length < 1) tbody.appendChild(rowTemplate());
+      }
+
+      function updateLineCount() {
+        if (!lineCountLabel) return;
+        const n = tbody.rows.length;
+        lineCountLabel.textContent = n === 1 ? "1 linha" : n + " linhas";
+      }
+
+      for (let i = 0; i < defaultRows; i++) tbody.appendChild(rowTemplate());
+      updateLineCount();
+
+      tbody.addEventListener("input", function (e) {
+        const t = e.target;
+        if (t && t.matches && t.matches('input[name="item_total[]"]')) recalcTotals();
+      });
+
+      tbody.addEventListener(
+        "blur",
+        function (e) {
+          const t = e.target;
+          if (!t || !t.matches) return;
+          if (t.matches('input[name="item_total[]"]')) {
+            const n = parseMoney(t.value);
+            if (t.value.trim() !== "") t.value = formatMoneyBR(n);
+            recalcTotals();
+          }
+        },
+        true
+      );
+
+      maoObraEl.addEventListener("input", recalcTotals);
+      maoObraEl.addEventListener("blur", function () {
+        const v = maoObraEl.value.trim();
+        if (v !== "") maoObraEl.value = formatMoneyBR(parseMoney(maoObraEl.value));
+        recalcTotals();
+      });
+
+      document.getElementById("btnAddRow").addEventListener("click", function () {
+        tbody.appendChild(rowTemplate());
+        updateLineCount();
+        recalcTotals();
+      });
+
+      document.getElementById("btnRemoveRow").addEventListener("click", function () {
+        if (tbody.rows.length > 1) tbody.deleteRow(tbody.rows.length - 1);
+        else ensureMinRows();
+        updateLineCount();
+        recalcTotals();
+      });
+
+      document.getElementById("btnPrint").addEventListener("click", function () {
+        window.print();
+      });
+
+      const dataInput = document.getElementById("data");
+      if (dataInput && !dataInput.value) {
+        const d = new Date();
+        dataInput.value = d.toISOString().slice(0, 10);
+      }
+
+      recalcTotals();
+    })();
+  </script>
+</body>
+</html>
